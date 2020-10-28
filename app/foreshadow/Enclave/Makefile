@@ -1,3 +1,5 @@
+SGX_SDK ?= /opt/intel/sgxsdk
+
 CC		  = gcc
 AR		  = ar
 LD		  = gcc
@@ -20,7 +22,7 @@ else
 endif
 
 ENCLAVE_LIBS      = $(LIB_SGX_TRTS)
-ENCLAVE_LIB_PARTS = -lsgx_tstdc -lsgx_tcrypto $(LIB_SGX_TSERVICE)
+ENCLAVE_LIB_PARTS = -lsgx_tstdc -lsgx_tcxx -lsgx_tprotected_fs -lsgx_pthread -lsgx_extraocall -lsgx_tcrypto $(LIB_SGX_TSERVICE)
 ENCLAVE	          = encl
 PRIVATE_KEY       = private_key.pem
 PUBLIC_KEY        = public_key.pem
@@ -79,7 +81,7 @@ asm_nop.S: build_asm.py
 
 edger: $(ENCLAVE).edl
 	echo "$(INDENT)[GEN]" $(EDGER) $(ENCLAVE_EDL)
-	$(EDGER) $(ENCLAVE_EDL)
+	$(EDGER) $(ENCLAVE_EDL) --search-path $(SGX_SDK)/include
 	
 .PHONY: force_check
 force_check:

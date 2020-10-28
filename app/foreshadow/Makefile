@@ -29,7 +29,7 @@ CFLAGS              += -fPIC -fno-stack-protector -fno-builtin -fno-jump-tables 
                        -fno-common -Wno-attributes -g -D_GNU_SOURCE -O0
 INCLUDE              = -I$(SGX_SDK)/include/ -I$(LIBSGXSTEP_DIR)
 LDFLAGS             += -lsgx-step -lencl_proxy -lsgx_urts \
-                       -lsgx_uae_service -pthread $(SUBDIRS:%=-L %) -L$(SGX_SDK)/lib$(LIB_SUFX)/ \
+                       -lsgx_uae_service -lsgx_uprotected_fs -pthread $(SUBDIRS:%=-L %) -L$(SGX_SDK)/lib$(LIB_SUFX)/ \
                        -L$(LIBSGXSTEP_DIR)/linux-sgx/psw/urts/linux
 
 SOURCES              = $(shell ls *.c)

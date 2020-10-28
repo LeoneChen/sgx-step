@@ -1,5 +1,7 @@
 enclave {
-	
+	from "sgx_pthread.edl" import *;
+    from "sgx_extraocall.edl" import *;
+    from "sgx_tprotected_fs.edl" import *;
 	trusted {
 		public void *enclave_generate_secret( void );
 		public void enclave_destroy_secret( [out] uint8_t cl[64]);
