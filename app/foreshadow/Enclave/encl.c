@@ -20,6 +20,8 @@
 
 #include <stdint.h>
 #include <sgx_trts.h>
+#include <stdio.h> /* vsnprintf */
+#include <string.h>
 
 // read entire cache line
 #define CACHE_LINE_SIZE     64
@@ -51,12 +53,29 @@ void enclave_destroy_secret( uint8_t cl[SECRET_BYTES] )
     }
 }
 
+/*
+ * printf:
+ *   Invokes OCALL to display the enclave buffer to the terminal.
+ */
+int printf(const char* fmt, ...)
+{
+    char buf[BUFSIZ] = { '\0' };
+    va_list ap;
+    va_start(ap, fmt);
+    vsnprintf(buf, BUFSIZ, fmt, ap);
+    va_end(ap);
+    ocall_print_string(buf);
+    return (int)strnlen(buf, BUFSIZ - 1) + 1;
+}
+
 void enclave_reload( void *adrs )
 {
+    printf("[enclave_reload] %s\n","begin");
     asm volatile (
         "movl (%0), %%eax\n\t"
         : : "c" (adrs)
         : "%rax");
+    printf("[enclave_reload] %s\n","end");
 }
 
 void enclave_run(void)

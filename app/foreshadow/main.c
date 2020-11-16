@@ -58,6 +58,7 @@ sgx_enclave_id_t eid = 0;
 void fault_handler(int signal)
 {
     fault_fired++;
+    printf("[fault_handler] %d\n",fault_fired);
 
     /* remap enclave page, so abort page semantics apply and execution can continue. */
     *pte_alias = MARK_PRESENT(pte_alias_unmapped);
@@ -136,6 +137,15 @@ void attacker_config_page_table(void)
 void attacker_restore_runtime(void)
 {
     restore_system_state();
+}
+
+/* OCall functions */
+void ocall_print_string(const char *str)
+{
+    /* Proxy/Bridge will check the length and null-terminate
+     * the input string to prevent buffer overflow.
+     */
+    printf("%s", str);
 }
 
 /* ================== ATTACKER MAIN ================= */

