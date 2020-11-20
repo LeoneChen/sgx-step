@@ -12,16 +12,12 @@ extern "C" int printf(const char *fmt, ...);
 
 extern "C" void load_addr(void) {
     ocall_clear_addr_flag(target_addr);
-    printf("[%s] begin\n", "load_addr");
+//    printf("[%s] begin\n", "load_addr");
     asm volatile (
     "movl (%0), %%eax\n\t"
     : : "c" (target_addr)
     : "%rax");
-    printf("[%s] end\n", "load_addr");
-}
-
-void *tell_addr(void) {
-    return target_addr;
+//    printf("[%s] end\n", "load_addr");
 }
 
 // SQLite callback function for printing results

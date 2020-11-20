@@ -36,15 +36,15 @@ void fault_handler(int signal) {
 }
 
 // ocalls for printing string (C++ ocalls)
-void ocall_print_error(const char *str){
+void ocall_print_error(const char *str) {
     cerr << str << endl;
 }
 
-void ocall_print_string(const char *str){
+void ocall_print_string(const char *str) {
     cout << str;
 }
 
-void ocall_println_string(const char *str){
+void ocall_println_string(const char *str) {
     cout << str << endl;
 }
 
@@ -52,19 +52,15 @@ void ocall_clear_addr_flag(void *target_ptr) {
     g_target_ptr = target_ptr;
 
     /* ensure a #PF on trigger accesses through the *alias* mapping */
-    ASSERT(pte_alias = (uint64_t*)remap_page_table_level(target_ptr, PTE));
+    ASSERT(pte_alias = (uint64_t *) remap_page_table_level(target_ptr, PTE));
     pte_alias_unmapped = MARK_NOT_PRESENT(*pte_alias);
     ASSERT(!mprotect((void *) (((uint64_t) target_ptr) & ~PFN_MASK), 0x1000, PROT_NONE));
     *pte_alias = pte_alias_unmapped;
 }
 
 // Application entry
-int main(int argc, char *argv[]){
-    if ( argc != 2 ){
-        cout << "Usage: " << argv[0] << " <database>" << endl;
-        return -1;
-    }
-    const char* dbname = argv[1];
+int main(int argc, char *argv[]) {
+    const char *dbname = (argc != 2) ? "a.db" : argv[1];
 
     ASSERT(signal(SIGSEGV, fault_handler) != SIG_ERR);
 
@@ -92,12 +88,12 @@ int main(int argc, char *argv[]){
     cout << "Enter SQL statement to execute or 'quit' to exit: " << endl;
     string input;
     cout << "> ";
-    while(getline(cin, input)) {
-        if (input == "quit"){
+    while (getline(cin, input)) {
+        if (input == "quit") {
             break;
         }
-        const char* sql = input.c_str();
-        ret =  ecall_execute_sql(eid, sql);
+        const char *sql = input.c_str();
+        ret = ecall_execute_sql(eid, sql);
         if (ret != SGX_SUCCESS) {
             cerr << "Error: Making an ecall_execute_sql()" << endl;
             return -1;
@@ -106,7 +102,7 @@ int main(int argc, char *argv[]){
     }
 
     // Closing SQLite database inside enclave
-    ret =  ecall_closedb(eid);
+    ret = ecall_closedb(eid);
     if (ret != SGX_SUCCESS) {
         cerr << "Error: Making an ecall_closedb()" << endl;
         return -1;
