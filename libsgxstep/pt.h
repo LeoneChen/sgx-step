@@ -160,20 +160,37 @@ void __attribute__((destructor))  tear_down_sgx_step( void );
 
 typedef enum {PGD, PUD, PMD, PTE, PAGE} pt_level_t;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void *remap(uint64_t phys);
+
 void free_map(void *p);
-void *remap_page_table_level( void *address, pt_level_t level );
+
+void *remap_page_table_level(void *address, pt_level_t level);
+
 void flush_tlb(void *adrs);
 
-address_mapping_t *get_mappings( void *address );
-uint64_t phys_address( address_mapping_t *map, pt_level_t level );
-uint64_t phys_base_address( address_mapping_t *map, pt_level_t level );
-uint64_t virt_index( address_mapping_t *map, pt_level_t level );
-uint64_t physical_address_width( void );
+address_mapping_t *get_mappings(void *address);
 
-void print_page_table( void *address );
-void print_pte_adrs( void *adrs);
-void print_pte( uint64_t *pte );
-void print_mapping( address_mapping_t *map );
+uint64_t phys_address(address_mapping_t *map, pt_level_t level);
 
+uint64_t phys_base_address(address_mapping_t *map, pt_level_t level);
+
+uint64_t virt_index(address_mapping_t *map, pt_level_t level);
+
+uint64_t physical_address_width(void);
+
+void print_page_table(void *address);
+
+void print_pte_adrs(void *adrs);
+
+void print_pte(uint64_t *pte);
+
+void print_mapping(address_mapping_t *map);
+
+#ifdef __cplusplus
+}
+#endif
 #endif
