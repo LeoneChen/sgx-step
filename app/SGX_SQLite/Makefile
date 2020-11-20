@@ -146,7 +146,7 @@ endif
 ##### TARGETS #####
 
 .PHONY: all run
-
+.SILENT:
 # Default target "all" is to build
 ifeq ($(Build_Mode), HW_RELEASE)
 all: $(BUILDDIRS) .config_$(Build_Mode)_$(SGX_ARCH) $(App_Name) $(Enclave_Name)
